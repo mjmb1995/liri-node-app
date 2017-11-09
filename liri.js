@@ -28,27 +28,26 @@ var showTweets = function() {
 }
 
 var getSong = function(){
-	var song = process.argv[3];
-
-	for (var i = 4; i < nodeArgs.length; i++){
-		song += " " + nodeArgs[i]
+	var song = ""
+	if (nodeArgs.length === 3){
+		song = "The Sign"
+	} else {
+		song = process.argv[3];
+		for (var i = 4; i < nodeArgs.length; i++){
+			song += " " + nodeArgs[i]
+		}
 	}
 	spotifySong(song);
 }
 
 
 var spotifySong = function(song){
-	
-	console.log(song);
 	 
 	spotify.search({ type: 'track', query: song, limit: 1 }, function(err, data) {
-	  if (err) {
-	    return console.log('Error occurred: ' + err);
-	  }
-	 	
-		
-		console.log(data);
-
+		if (err) {
+		    return console.log('Error occurred: ' + err);
+		}
+		 	
 		console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		console.log("The artist is: " + data.tracks.items[0].artists[0].name)
 		console.log("The song title is: " + data.tracks.items[0].name)
@@ -85,10 +84,10 @@ var movieThis = function(){
 
 	    if (!error && response.statusCode === 200) {
 	    console.log(JSON.parse(body));
-		  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		  console.log("Title: " + JSON.parse(body).Title);
-		  console.log("Release Year: " + JSON.parse(body).Year);
-		  console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
+		console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		console.log("Title: " + JSON.parse(body).Title);
+		console.log("Release Year: " + JSON.parse(body).Year);
+		console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
 
 		  for (var i = 0; i < (JSON.parse(body).Ratings).length; i++){
 			if (JSON.parse(body).Ratings[i].Source === 'Rotten Tomatoes'){
@@ -96,12 +95,11 @@ var movieThis = function(){
 		  	}
 		  }
 		  
-		  console.log("Country the movie was produced: " + JSON.parse(body).Country);
-		  console.log("Language: " + JSON.parse(body).Language);
-		  console.log("Movie Plot: " + JSON.parse(body).Plot);
-		  console.log("Notable Actors in the movie: " + JSON.parse(body).Actors);
-		  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
+		console.log("Country the movie was produced: " + JSON.parse(body).Country);
+		console.log("Language: " + JSON.parse(body).Language);
+		console.log("Movie Plot: " + JSON.parse(body).Plot);
+		console.log("Notable Actors in the movie: " + JSON.parse(body).Actors);
+		console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	  	}
 	});
 }
@@ -115,6 +113,30 @@ var doWhatItSays = function(){
 	spotifySong(data[1]);	
 	}) 
 }
+
+// bonus section
+var logCommands = function(){
+	var commandToLog = process.argv[2]
+
+	for (var i = 3; i < nodeArgs.length; i++){
+		commandToLog += " " + nodeArgs[i];
+	}
+
+	// We then append the contents "commandToLog" into the file
+	// If the file didn't exist then it gets created on the fly.
+	fs.appendFile("log.txt", commandToLog, function(err) {
+  	// If an error was experienced we say it.
+	  	if (err) {
+	    	console.log(err);
+	  	}
+	  	// If no error is experienced, we'll log the phrase "Content Added" to our node console.
+	  	else {
+	    	console.log("Your command has been log!");
+	  	}
+	});
+}
+
+logCommands();
 
 if (command === "my-tweets"){
 	showTweets();
