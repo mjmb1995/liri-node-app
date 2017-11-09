@@ -66,15 +66,15 @@ var spotifySong = function(song){
 var movieThis = function(){
 	var movieName = ""
 	if (nodeArgs.length === 3){
-		movieName = "tt0485947"
+		movieName = "i=tt0485947"
 	} else {
-		movieName = process.argv[3];
+		movieName = "t=" + process.argv[3];
 		for (var i = 4; i < nodeArgs.length; i++){
 		movieName += " " + nodeArgs[i]
 		}
 	}
 	// Then run a request to the OMDB API with the movie specified
-	var queryUrl = "http://www.omdbapi.com/?i=" + movieName + "&y=&plot=short&apikey=40e9cece";
+	var queryUrl = "http://www.omdbapi.com/?" + movieName + "&y=&plot=short&apikey=40e9cece";
 	// This line is just to help us debug against the actual URL.
 	console.log(queryUrl);
 	// Then create a request to the queryUrl
@@ -89,12 +89,13 @@ var movieThis = function(){
 		console.log("Release Year: " + JSON.parse(body).Year);
 		console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
 
-		  for (var i = 0; i < (JSON.parse(body).Ratings).length; i++){
-			if (JSON.parse(body).Ratings[i].Source === 'Rotten Tomatoes'){
+		if(JSON.parse(body).Ratings === !undefined){
+		  	for (var i = 0; i < (JSON.parse(body).Ratings).length; i++){
+				if (JSON.parse(body).Ratings[i].Source === 'Rotten Tomatoes'){
 		  		console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
+		  		}
 		  	}
-		  }
-		  
+		}
 		console.log("Country the movie was produced: " + JSON.parse(body).Country);
 		console.log("Language: " + JSON.parse(body).Language);
 		console.log("Movie Plot: " + JSON.parse(body).Plot);
@@ -124,7 +125,7 @@ var logCommands = function(){
 
 	// We then append the contents "commandToLog" into the file
 	// If the file didn't exist then it gets created on the fly.
-	fs.appendFile("log.txt", commandToLog, function(err) {
+	fs.appendFile("log.txt", " " + commandToLog, function(err) {
   	// If an error was experienced we say it.
 	  	if (err) {
 	    	console.log(err);
