@@ -1,5 +1,6 @@
 var request = require("request");
 var myKeys = require("./keys.js");
+var fs = require("fs");
 var client = myKeys.client;
 var spotify = myKeys.spotify;
 
@@ -26,13 +27,18 @@ var showTweets = function() {
 	});
 }
 
-
-var spotifySong = function(){
+var getSong = function(){
 	var song = process.argv[3];
 
 	for (var i = 4; i < nodeArgs.length; i++){
 		song += " " + nodeArgs[i]
 	}
+	spotifySong(song);
+}
+
+
+var spotifySong = function(song){
+	
 	console.log(song);
 	 
 	spotify.search({ type: 'track', query: song, limit: 1 }, function(err, data) {
@@ -40,11 +46,18 @@ var spotifySong = function(){
 	    return console.log('Error occurred: ' + err);
 	  }
 	 	
-		var response = JSON.parse(data);
-		console.log(response);
+		
+		console.log(data);
 
 		console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		console.log(response[0].tracks.items[0].album.artists[0].external_urls.name)
+		console.log("The artist is: " + data.tracks.items[0].artists[0].name)
+		console.log("The song title is: " + data.tracks.items[0].name)
+		if (data.tracks.items[0].preview_url === !null){
+			console.log("Here is the preview URL: " + data.tracks.items[0].preview_url)
+		} else{
+			console.log("Appologies, a Spotify preview URL does not exist for this song.")
+		}
+		console.log("This is the album the song is from: " + data.tracks.items[0].album.name)
 
 		console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	});
@@ -52,14 +65,17 @@ var spotifySong = function(){
 
 
 var movieThis = function(){
-	var movieName = process.argv[3];
-
-	for (var i = 4; i < nodeArgs.length; i++){
+	var movieName = ""
+	if (nodeArgs.length === 3){
+		movieName = "tt0485947"
+	} else {
+		movieName = process.argv[3];
+		for (var i = 4; i < nodeArgs.length; i++){
 		movieName += " " + nodeArgs[i]
+		}
 	}
-
 	// Then run a request to the OMDB API with the movie specified
-	var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=40e9cece";
+	var queryUrl = "http://www.omdbapi.com/?i=" + movieName + "&y=&plot=short&apikey=40e9cece";
 	// This line is just to help us debug against the actual URL.
 	console.log(queryUrl);
 	// Then create a request to the queryUrl
@@ -68,6 +84,7 @@ var movieThis = function(){
   		// If the request is successful
 
 	    if (!error && response.statusCode === 200) {
+	    console.log(JSON.parse(body));
 		  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		  console.log("Title: " + JSON.parse(body).Title);
 		  console.log("Release Year: " + JSON.parse(body).Year);
@@ -89,11 +106,21 @@ var movieThis = function(){
 	});
 }
 
+var doWhatItSays = function(){
+	fs.readFile("random.txt", "utf8", function(err, data){
+		if (err){
+			return console.log(err);
+		}
+	data = data.split(",");
+	spotifySong(data[1]);	
+	}) 
+}
+
 if (command === "my-tweets"){
 	showTweets();
 } else if (command === "spotify-this-song"){
 	// node liri.js spotify-this-song '<song name here>'
-	spotifySong()
+	getSong()
 } else if(command === "movie-this"){
 	movieThis()
 } else if(command === "do-what-it-says"){
