@@ -1,4 +1,5 @@
 var Twitter = require('twitter');
+var Spotify = require('node-spotify-api');
 
 var client = new Twitter({
   consumer_key: '5rM6xk5nN3trJZge8miceCudn',
@@ -7,4 +8,12 @@ var client = new Twitter({
   access_token_secret: 'mw1r5j8AKkrgvGNqeSwmkTMYBW6WIO3Jif4jYSJ6VZOz5'
 });
 
-module.exports = client;
+var spotify = new Spotify({
+	id: "781a395eb3ff4da2a3931c821b86f4ee",
+	secret: "f84b4f6c1ca840d3bf7d2b281d766915"
+});
+
+module.exports = {
+	client: client, 
+	spotify: spotify
+};
